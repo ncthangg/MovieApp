@@ -10,14 +10,14 @@ namespace MovieApp.Common.AutoMapper
         public MappingProfile()
         {
             ///User
-            //request
+            //Request
             CreateMap<User, RequestUserDto>().ReverseMap();
             CreateMap<UserRole, RequestUserRoleDto>().ReverseMap();
             CreateMap<UserStatus, RequestUserStatusDto>().ReverseMap();
             CreateMap<UserLike, RequestUserLikeDto>().ReverseMap();
             CreateMap<UserWatchHistory, RequestUserWatchHistoryDto>().ReverseMap();
 
-            //response
+            //Response
             CreateMap<User, ResponseUserDto>();
             CreateMap<UserRole, ResponseUserRoleDto>();
             CreateMap<UserStatus, ResponseUserStatusDto>();
@@ -32,23 +32,30 @@ namespace MovieApp.Common.AutoMapper
             CreateMap<Category, ResponseCategoryDto>();
             CreateMap<Movie, ResponseMovieDto>();
 
-            // Ánh xạ MovieCategory sang ResponseCategoryDto
+            ///Movie_Category
             CreateMap<MovieCategory, ResponseCategoryDto>()
-                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
-                .IncludeMembers(src => src.Category);
-            // Ánh xạ từ danh sách MovieCategory sang ResponseMovieCategoryDto
+            .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
+            .IncludeMembers(src => src.Category);
+            CreateMap<MovieCategory, ResponseMovieDto>()
+                .ForMember(dest => dest.MovieId, opt => opt.MapFrom(src => src.MovieId))
+                .IncludeMembers(src => src.Movie);
+
+            CreateMap<MovieCategory, ResponseMovieCategoryDto>()
+                .ForMember(dest => dest.MovieId, opt => opt.MapFrom(src => src.MovieId))
+                .ForMember(dest => dest.Category, opt => opt.Ignore()) 
+                .AfterMap((src, dest, context) =>
+                 {
+                    dest.Category = context.Mapper.Map<List<ResponseCategoryDto>>(src.Category);
+                 });
+
             CreateMap<IEnumerable<MovieCategory>, ResponseMovieCategoryDto>()
                 .ForMember(dest => dest.MovieId, opt => opt.MapFrom(src => src.First().MovieId))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src));
 
-            // Ánh xạ MovieCategory sang ResponseMovieDto
-            CreateMap<MovieCategory, ResponseMovieDto>()
-                .ForMember(dest => dest.MovieId, opt => opt.MapFrom(src => src.MovieId))
-                .IncludeMembers(src => src.Movie);
-            // Ánh xạ từ danh sách MovieCategory sang ResponseCategoryMovieDto
             CreateMap<IEnumerable<MovieCategory>, ResponseCategoryMovieDto>()
                 .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.First().CategoryId))
                 .ForMember(dest => dest.Movie, opt => opt.MapFrom(src => src));
+
 
             CreateMap<MovieRate, ResponseMovieRateDto>();
         }

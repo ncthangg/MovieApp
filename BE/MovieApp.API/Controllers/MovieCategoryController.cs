@@ -23,6 +23,29 @@ namespace MovieApp.API.Controllers
             _serviceWrapper = serviceWrapper;
             _mapper = mapper;
         }
+        // GET: /movie/{movieId}/categories
+        [HttpGet]
+        public async Task<IActionResult> GetAllMovieCategory()
+        {
+            var result = await _serviceWrapper.MovieCategoryService.GetAllMovieCategory();
+            if (result.Status < 0)
+            {
+                return NotFound(new ApiResponseDto<IEnumerable<ResponseMovieCategoryDto>>
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = result.Message,
+                    Data = null
+                });
+            }
+
+            return Ok(new ApiResponseDto<IEnumerable<ResponseMovieCategoryDto>>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Message = result.Message,
+                Data = (IEnumerable<ResponseMovieCategoryDto>)result.Data
+            });
+
+        }
 
         // GET: /movie/{movieId}/categories
         [HttpGet("movie/{movieId}/categories")]
@@ -70,11 +93,10 @@ namespace MovieApp.API.Controllers
                 Data = (ResponseCategoryMovieDto)result.Data
             });
         }
-
         [HttpPost]
-        public async Task<IActionResult> AddCategoriesToMovie([FromBody] RequestMovieCategoryDto requestMovieCategoryDto)
+        public async Task<IActionResult> SetCategoriesToMovie([FromBody] RequestMovieCategoryDto requestMovieCategoryDto)
         {
-            var result = await _serviceWrapper.MovieCategoryService.Create(requestMovieCategoryDto);
+            var result = await _serviceWrapper.MovieCategoryService.Upsert(requestMovieCategoryDto);
             var responseData = _mapper.Map<ResponseMovieCategoryDto>(result.Data);
 
             if (result.Status < 0)
@@ -95,30 +117,55 @@ namespace MovieApp.API.Controllers
             });
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateCategoryFromMovie([FromBody] RequestMovieCategoryDto requestMovieCategoryDto)
-        {
-            var result = await _serviceWrapper.MovieCategoryService.Update(requestMovieCategoryDto);
-            var responseData = _mapper.Map<ResponseMovieCategoryDto>(result.Data);
+        #region Create and Update CONTROLLER OLD
+        //[HttpPost]
+        //public async Task<IActionResult> AddCategoriesToMovie([FromBody] RequestMovieCategoryDto requestMovieCategoryDto)
+        //{
+        //    var result = await _serviceWrapper.MovieCategoryService.Create(requestMovieCategoryDto);
+        //    var responseData = _mapper.Map<ResponseMovieCategoryDto>(result.Data);
 
-            if (result.Status < 0)
-            {
-                return NotFound(new ApiResponseDto<ResponseMovieCategoryDto>
-                {
-                    StatusCode = HttpStatusCode.NotFound,
-                    Message = result.Message,
-                    Data = null
-                });
-            }
+        //    if (result.Status < 0)
+        //    {
+        //        return NotFound(new ApiResponseDto<ResponseMovieCategoryDto>
+        //        {
+        //            StatusCode = HttpStatusCode.NotFound,
+        //            Message = result.Message,
+        //            Data = null
+        //        });
+        //    }
 
-            return Ok(new ApiResponseDto<ResponseMovieCategoryDto>
-            {
-                StatusCode = HttpStatusCode.OK,
-                Message = result.Message,
-                Data = responseData
-            });
-        }
+        //    return Ok(new ApiResponseDto<ResponseMovieCategoryDto>
+        //    {
+        //        StatusCode = HttpStatusCode.OK,
+        //        Message = result.Message,
+        //        Data = responseData
+        //    });
+        //}
 
+        //[HttpPut]
+        //public async Task<IActionResult> UpdateCategoryFromMovie([FromBody] RequestMovieCategoryDto requestMovieCategoryDto)
+        //{
+        //    var result = await _serviceWrapper.MovieCategoryService.Update(requestMovieCategoryDto);
+        //    var responseData = _mapper.Map<ResponseMovieCategoryDto>(result.Data);
+
+        //    if (result.Status < 0)
+        //    {
+        //        return NotFound(new ApiResponseDto<ResponseMovieCategoryDto>
+        //        {
+        //            StatusCode = HttpStatusCode.NotFound,
+        //            Message = result.Message,
+        //            Data = null
+        //        });
+        //    }
+
+        //    return Ok(new ApiResponseDto<ResponseMovieCategoryDto>
+        //    {
+        //        StatusCode = HttpStatusCode.OK,
+        //        Message = result.Message,
+        //        Data = responseData
+        //    });
+        //}
+        #endregion
 
     }
 }
