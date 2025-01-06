@@ -399,4 +399,6 @@ FodyWeavers.xsd
 
 # Bỏ qua appsettings.json
 appsettings.json
+appsettings.Development.json
 appsettings.*.json
+secrets.json
