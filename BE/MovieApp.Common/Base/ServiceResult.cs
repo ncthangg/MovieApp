@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MovieApp.Common.Base
+﻿namespace MovieApp.Common.Base
 {
     public interface IServiceResult
     {
         int Status { get; set; }
         string? Message { get; set; }
         object? Data { get; set; }
+        int? Count { get; set; }
     }
 
     public class ServiceResult : IServiceResult
@@ -18,6 +13,7 @@ namespace MovieApp.Common.Base
         public int Status { get; set; }
         public string? Message { get; set; }
         public object? Data { get; set; }
+        public int? Count { get; set; }
 
         public ServiceResult()
         {
@@ -30,12 +26,18 @@ namespace MovieApp.Common.Base
             Status = status;
             Message = message;
         }
-
         public ServiceResult(int status, string message, object data)
         {
             Status = status;
             Message = message;
             Data = data;
+        }
+        public ServiceResult(int status, string message, object data, int count = 0)
+        {
+            Status = status;
+            Message = message;
+            Data = data;
+            Count = count;
         }
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MovieApp.Common.DTOs.Request
+﻿namespace MovieApp.Common.DTOs.Request
 {
     public class RequestMovieDto
     {
@@ -14,5 +8,6 @@ namespace MovieApp.Common.DTOs.Request
         public string PosterUrl { get; set; }
         public string Director { get; set; }
         public int ReleaseYear { get; set; }
+        public long TypeId { get; set; }
     }
 }

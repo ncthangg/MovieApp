@@ -29,8 +29,38 @@ namespace MovieApp.Common.AutoMapper
             CreateMap<UserVerification, ResponseUserVerificationDto>();
 
             ///Movie
+            CreateMap<Actor, ResponseActorDto>();
+
             CreateMap<Category, ResponseCategoryDto>();
+            CreateMap<MovieType, ResponseTypeDto>();
+
             CreateMap<Movie, ResponseMovieDto>();
+            CreateMap<MovieRate, ResponseMovieRateDto>();
+
+            ///Movie_Actor
+            //CreateMap<MovieActor, ResponseMovieActorDto>();
+            CreateMap<MovieActor, ResponseActorDto>()
+                .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => src.ActorId))
+                .IncludeMembers(src => src.Actor);
+            CreateMap<MovieActor, ResponseMovieDto>()
+                .ForMember(dest => dest.MovieId, opt => opt.MapFrom(src => src.MovieId))
+                .IncludeMembers(src => src.Movie);
+
+            CreateMap<MovieActor, ResponseMovieActorDto>()
+                .ForMember(dest => dest.MovieId, opt => opt.MapFrom(src => src.MovieId))
+                .ForMember(dest => dest.Actor, opt => opt.Ignore())
+                .AfterMap((src, dest, context) =>
+                {
+                    dest.Actor = context.Mapper.Map<List<ResponseActorDto>>(src.Actor);
+                });
+
+            CreateMap<IEnumerable<MovieActor>, ResponseMovieActorDto>()
+                .ForMember(dest => dest.MovieId, opt => opt.MapFrom(src => src.First().MovieId))
+                .ForMember(dest => dest.Actor, opt => opt.MapFrom(src => src));
+
+            CreateMap<IEnumerable<MovieActor>, ResponseActorMovieDto>()
+                .ForMember(dest => dest.ActorId, opt => opt.MapFrom(src => src.First().ActorId))
+                .ForMember(dest => dest.Movie, opt => opt.MapFrom(src => src));
 
             ///Movie_Category
             CreateMap<MovieCategory, ResponseCategoryDto>()
@@ -57,7 +87,6 @@ namespace MovieApp.Common.AutoMapper
                 .ForMember(dest => dest.Movie, opt => opt.MapFrom(src => src));
 
 
-            CreateMap<MovieRate, ResponseMovieRateDto>();
         }
     }
 }

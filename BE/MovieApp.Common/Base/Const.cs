@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MovieApp.Common.Base
+﻿namespace MovieApp.Common.Base
 {
     public class Const
     {
