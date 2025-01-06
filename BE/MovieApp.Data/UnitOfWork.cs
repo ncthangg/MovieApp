@@ -1,11 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MovieApp.Data.DBContext;
+﻿using MovieApp.Data.DBContext;
 using MovieApp.Data.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MovieApp.Data
 {
@@ -19,9 +13,16 @@ namespace MovieApp.Data
         private UserWatchHistoryRepository _userWatchHistoryRepository;
         private UserLikeRepository _userLikeRepository;
 
+        private ActorRepository _actorRepository;
+        private MovieActorRepository _movieActorRepository;
+
         private MovieRepository _movieRepository;
-        private MovieCategoryRepository _movieCategoryRepository;
+        private MovieSeasonRepository _movieSeasonRepository;
+        private MovieEpisodeRepository _movieEpisodeRepository;
         private MovieRateRepository _movieRateRepository;
+        private MovieCategoryRepository _movieCategoryRepository;
+
+        private TypeRepository _typeRepository;
         private CategoryRepository _categoryRepository;
 
         private MovieAppDBContext _dbContext;
@@ -80,12 +81,40 @@ namespace MovieApp.Data
             }
         }
 
+        public CategoryRepository CategoryRepository
+        {
+            get
+            {
+                return _categoryRepository ??= new Repository.CategoryRepository(_dbContext);
+            }
+        }
+        public ActorRepository ActorRepository
+        {
+            get
+            {
+                return _actorRepository ??= new Repository.ActorRepository(_dbContext);
+            }
+        }
 
         public MovieRepository MovieRepository
         {
             get
             {
                 return _movieRepository ??= new Repository.MovieRepository(_dbContext);
+            }
+        }
+        public MovieSeasonRepository MovieSeasonRepository
+        {
+            get
+            {
+                return _movieSeasonRepository ??= new Repository.MovieSeasonRepository(_dbContext);
+            }
+        }
+        public MovieEpisodeRepository MovieEpisodeRepository
+        {
+            get
+            {
+                return _movieEpisodeRepository ??= new Repository.MovieEpisodeRepository(_dbContext);
             }
         }
         public MovieCategoryRepository MovieCategoryRepository
@@ -102,13 +131,21 @@ namespace MovieApp.Data
                 return _movieRateRepository ??= new Repository.MovieRateRepository(_dbContext);
             }
         }
-        public CategoryRepository CategoryRepository
+        public TypeRepository TypeRepository
         {
             get
             {
-                return _categoryRepository ??= new Repository.CategoryRepository(_dbContext);
+                return _typeRepository ??= new Repository.TypeRepository(_dbContext);
             }
         }
+        public MovieActorRepository MovieActorRepository
+        {
+            get
+            {
+                return _movieActorRepository ??= new Repository.MovieActorRepository(_dbContext);
+            }
+        }
+
 
     }
 }

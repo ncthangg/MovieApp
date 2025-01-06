@@ -1,17 +1,16 @@
-﻿ using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MovieApp.Data.DBContext;
 using MovieApp.Data.Models;
 using MovieApp.Data.Repository.BaseRepository;
 
 namespace MovieApp.Data.Repository
 {
-    public class MovieRepository : GenericRepository<Movie>
+    public class MovieSeasonRepository : GenericRepository<MovieSeason>
     {
-        public MovieRepository()
+        public MovieSeasonRepository()
         {
         }
-        public MovieRepository(MovieAppDBContext context) => _context = context;
-
+        public MovieSeasonRepository(MovieAppDBContext context) => _context = context;
         public async Task<List<Movie>> GetByMovieNameAsync(string name)
         {
             return await _context.Set<Movie>()
@@ -19,6 +18,5 @@ namespace MovieApp.Data.Repository
                 .Where(u => EF.Functions.Like(u.MovieName, $"%{name}%"))
                 .ToListAsync();
         }
-
     }
 }

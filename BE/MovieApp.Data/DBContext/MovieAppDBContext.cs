@@ -19,13 +19,23 @@ public partial class MovieAppDBContext : DbContext
     {
     }
 
+    public virtual DbSet<Actor> Actors { get; set; }
+
     public virtual DbSet<Category> Categories { get; set; }
 
     public virtual DbSet<Movie> Movies { get; set; }
 
+    public virtual DbSet<MovieActor> MovieActors { get; set; }
+
     public virtual DbSet<MovieCategory> MovieCategories { get; set; }
 
+    public virtual DbSet<MovieEpisode> MovieEpisodes { get; set; }
+
     public virtual DbSet<MovieRate> MovieRates { get; set; }
+
+    public virtual DbSet<MovieSeason> MovieSeasons { get; set; }
+
+    public virtual DbSet<MovieType> MovieTypes { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -55,12 +65,26 @@ public partial class MovieAppDBContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
    => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Actor>(entity =>
+        {
+            entity.HasKey(e => e.ActorId).HasName("PK__Actor__8332510B7B333B29");
+
+            entity.ToTable("Actor");
+
+            entity.Property(e => e.ActorId).HasColumnName("actorId");
+            entity.Property(e => e.ActorName)
+                .IsRequired()
+                .HasMaxLength(255)
+                .HasColumnName("actorName");
+            entity.Property(e => e.Bio).HasColumnName("bio");
+            entity.Property(e => e.BirthDate).HasColumnName("birthDate");
+        });
+
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("category_categoryid_primary");
+            entity.HasKey(e => e.CategoryId).HasName("PK__Category__23CAF1D866858356");
 
             entity.ToTable("Category");
 
@@ -73,7 +97,7 @@ public partial class MovieAppDBContext : DbContext
 
         modelBuilder.Entity<Movie>(entity =>
         {
-            entity.HasKey(e => e.MovieId).HasName("movie_movieid_primary");
+            entity.HasKey(e => e.MovieId).HasName("PK__Movie__42EB374E8AFB3CB4");
 
             entity.ToTable("Movie");
 
@@ -95,15 +119,42 @@ public partial class MovieAppDBContext : DbContext
                 .HasColumnName("movieName");
             entity.Property(e => e.PosterUrl).HasColumnName("posterUrl");
             entity.Property(e => e.ReleaseYear).HasColumnName("releaseYear");
+            entity.Property(e => e.TypeId).HasColumnName("typeId");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updatedAt");
             entity.Property(e => e.VideoUrl).HasColumnName("videoUrl");
+
+            entity.HasOne(d => d.Type).WithMany(p => p.Movies)
+                .HasForeignKey(d => d.TypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("movie_type_typeid_foreign");
+        });
+
+        modelBuilder.Entity<MovieActor>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Movie_Ac__3213E83F7852AF8E");
+
+            entity.ToTable("Movie_Actor");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ActorId).HasColumnName("actorId");
+            entity.Property(e => e.MovieId).HasColumnName("movieId");
+
+            entity.HasOne(d => d.Actor).WithMany(p => p.MovieActors)
+                .HasForeignKey(d => d.ActorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("movie_actor_actorid_foreign");
+
+            entity.HasOne(d => d.Movie).WithMany(p => p.MovieActors)
+                .HasForeignKey(d => d.MovieId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("movie_actor_movieid_foreign");
         });
 
         modelBuilder.Entity<MovieCategory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("movie_category_id_primary");
+            entity.HasKey(e => e.Id).HasName("PK__Movie_Ca__3213E83F299F0641");
 
             entity.ToTable("Movie_Category");
 
@@ -122,9 +173,38 @@ public partial class MovieAppDBContext : DbContext
                 .HasConstraintName("movie_category_movieid_foreign");
         });
 
+        modelBuilder.Entity<MovieEpisode>(entity =>
+        {
+            entity.HasKey(e => e.EpisodeId).HasName("PK__Movie_Ep__9C720D68C24A3F5E");
+
+            entity.ToTable("Movie_Episode");
+
+            entity.Property(e => e.EpisodeId).HasColumnName("episodeId");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("createdAt");
+            entity.Property(e => e.Description)
+                .IsRequired()
+                .HasColumnName("description");
+            entity.Property(e => e.EpisodeName)
+                .IsRequired()
+                .HasColumnName("episodeName");
+            entity.Property(e => e.IsDeleted).HasColumnName("isDeleted");
+            entity.Property(e => e.PosterUrl).HasColumnName("posterUrl");
+            entity.Property(e => e.SeasonId).HasColumnName("seasonId");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("updatedAt");
+            entity.Property(e => e.VideoUrl).HasColumnName("videoUrl");
+
+            entity.HasOne(d => d.Season).WithMany(p => p.MovieEpisodes)
+                .HasForeignKey(d => d.SeasonId)
+                .HasConstraintName("movie_episode_movie_season_foreign");
+        });
+
         modelBuilder.Entity<MovieRate>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("movie_rate_id_primary");
+            entity.HasKey(e => e.Id).HasName("PK__Movie_Ra__3213E83F2CF89292");
 
             entity.ToTable("Movie_Rate");
 
@@ -151,9 +231,48 @@ public partial class MovieAppDBContext : DbContext
                 .HasConstraintName("movie_rate_userid_foreign");
         });
 
+        modelBuilder.Entity<MovieSeason>(entity =>
+        {
+            entity.HasKey(e => e.SeasonId).HasName("PK__Movie_Se__BA85A62DFED2D8D2");
+
+            entity.ToTable("Movie_Season");
+
+            entity.Property(e => e.SeasonId).HasColumnName("seasonId");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("createdAt");
+            entity.Property(e => e.IsDeleted).HasColumnName("isDeleted");
+            entity.Property(e => e.MovieId).HasColumnName("movieId");
+            entity.Property(e => e.PosterUrl).HasColumnName("posterUrl");
+            entity.Property(e => e.ReleaseYear).HasColumnName("releaseYear");
+            entity.Property(e => e.SeasonName)
+                .IsRequired()
+                .HasColumnName("seasonName");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("updatedAt");
+
+            entity.HasOne(d => d.Movie).WithMany(p => p.MovieSeasons)
+                .HasForeignKey(d => d.MovieId)
+                .HasConstraintName("movie_season_movie_foreign");
+        });
+
+        modelBuilder.Entity<MovieType>(entity =>
+        {
+            entity.HasKey(e => e.TypeId).HasName("PK__Movie_Ty__F04DF13ABAD24016");
+
+            entity.ToTable("Movie_Type");
+
+            entity.Property(e => e.TypeId).HasColumnName("typeId");
+            entity.Property(e => e.TypeName)
+                .IsRequired()
+                .HasMaxLength(255)
+                .HasColumnName("typeName");
+        });
+
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("user_userid_primary");
+            entity.HasKey(e => e.UserId).HasName("PK__User__CB9A1CFFC28FBDBC");
 
             entity.ToTable("User");
 
@@ -194,7 +313,7 @@ public partial class MovieAppDBContext : DbContext
 
         modelBuilder.Entity<UserLike>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("user_like_id_primary");
+            entity.HasKey(e => e.Id).HasName("PK__User_Lik__3213E83F4D3F9D14");
 
             entity.ToTable("User_Like");
 
@@ -217,7 +336,7 @@ public partial class MovieAppDBContext : DbContext
 
         modelBuilder.Entity<UserRole>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("user_role_roleid_primary");
+            entity.HasKey(e => e.RoleId).HasName("PK__User_Rol__CD98462AA6C11FA3");
 
             entity.ToTable("User_Role");
 
@@ -230,7 +349,7 @@ public partial class MovieAppDBContext : DbContext
 
         modelBuilder.Entity<UserStatus>(entity =>
         {
-            entity.HasKey(e => e.StatusId).HasName("user_status_statusid_primary");
+            entity.HasKey(e => e.StatusId).HasName("PK__User_Sta__36257A189E2801CE");
 
             entity.ToTable("User_Status");
 
@@ -243,13 +362,13 @@ public partial class MovieAppDBContext : DbContext
 
         modelBuilder.Entity<UserToken>(entity =>
         {
-            entity.HasKey(e => e.TokenId).HasName("PK__User_Tok__AC16DB475719DB1D");
+            entity.HasKey(e => e.TokenId).HasName("PK__User_Tok__AC16DB47E2F83942");
 
             entity.ToTable("User_Token");
 
-            entity.HasIndex(e => e.UserId, "UQ__User_Tok__CB9A1CFE076B1D11").IsUnique();
+            entity.HasIndex(e => e.UserId, "UQ__User_Tok__CB9A1CFE0B70DD73").IsUnique();
 
-            entity.HasIndex(e => e.RefreshToken, "UQ__User_Tok__D771D24AF9ABDFED").IsUnique();
+            entity.HasIndex(e => e.RefreshToken, "UQ__User_Tok__D771D24A9E05ACE5").IsUnique();
 
             entity.Property(e => e.TokenId).HasColumnName("tokenId");
             entity.Property(e => e.LastLogin)
@@ -271,7 +390,7 @@ public partial class MovieAppDBContext : DbContext
 
         modelBuilder.Entity<UserVerification>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__User_Ver__3213E83FD91F6F09");
+            entity.HasKey(e => e.Id).HasName("PK__User_Ver__3213E83FF3C6FDAF");
 
             entity.ToTable("User_Verification");
 
@@ -297,20 +416,31 @@ public partial class MovieAppDBContext : DbContext
 
         modelBuilder.Entity<UserWatchHistory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("user_watchhistory_id_primary");
+            entity.HasKey(e => e.Id).HasName("PK__User_Wat__3213E83FEAAB91AB");
 
             entity.ToTable("User_WatchHistory");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.MovieId).HasColumnName("movieId");
-            entity.Property(e => e.UserId).HasColumnName("userId");
-            entity.Property(e => e.WatchAt)
+            entity.Property(e => e.EpisodeId).HasColumnName("episodeId");
+            entity.Property(e => e.LastWatch)
                 .HasColumnType("datetime")
-                .HasColumnName("watchAt");
+                .HasColumnName("lastWatch");
+            entity.Property(e => e.MovieId).HasColumnName("movieId");
+            entity.Property(e => e.SeasonId).HasColumnName("seasonId");
+            entity.Property(e => e.TimeWatch).HasColumnName("timeWatch");
+            entity.Property(e => e.UserId).HasColumnName("userId");
+
+            entity.HasOne(d => d.Episode).WithMany(p => p.UserWatchHistories)
+                .HasForeignKey(d => d.EpisodeId)
+                .HasConstraintName("user_watchhistory_episodeId_foreign");
 
             entity.HasOne(d => d.Movie).WithMany(p => p.UserWatchHistories)
                 .HasForeignKey(d => d.MovieId)
                 .HasConstraintName("user_watchhistory_movieid_foreign");
+
+            entity.HasOne(d => d.Season).WithMany(p => p.UserWatchHistories)
+                .HasForeignKey(d => d.SeasonId)
+                .HasConstraintName("user_watchhistory_seasonId_foreign");
 
             entity.HasOne(d => d.User).WithMany(p => p.UserWatchHistories)
                 .HasForeignKey(d => d.UserId)

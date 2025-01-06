@@ -21,15 +21,23 @@ public partial class Movie
 
     public int ReleaseYear { get; set; }
 
+    public long TypeId { get; set; }
+
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
     public bool IsDeleted { get; set; }
 
+    public virtual ICollection<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
+
     public virtual ICollection<MovieCategory> MovieCategories { get; set; } = new List<MovieCategory>();
 
     public virtual ICollection<MovieRate> MovieRates { get; set; } = new List<MovieRate>();
+
+    public virtual ICollection<MovieSeason> MovieSeasons { get; set; } = new List<MovieSeason>();
+
+    public virtual MovieType Type { get; set; }
 
     public virtual ICollection<UserLike> UserLikes { get; set; } = new List<UserLike>();
 

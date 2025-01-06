@@ -2,11 +2,6 @@
 using MovieApp.Data.DBContext;
 using MovieApp.Data.Models;
 using MovieApp.Data.Repository.BaseRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MovieApp.Data.Repository
 {
@@ -23,10 +18,22 @@ namespace MovieApp.Data.Repository
                 .Where(like => like.UserId == userId)
                 .ToListAsync();
         }
-        public async Task<List<UserWatchHistory>> GetByMovieIdAsync(long movieId)
+        public async Task<List<UserWatchHistory>> GetByMovieIdAsync(long userId, long movieId)
         {
             return await _context.Set<UserWatchHistory>()
-                .Where(like => like.MovieId == movieId)
+                .Where(like => like.UserId == userId && like.MovieId == movieId)
+                .ToListAsync();
+        }
+        public async Task<List<UserWatchHistory>> GetBySeasonIdAsync(long userId, long movieId, long seasonId)
+        {
+            return await _context.Set<UserWatchHistory>()
+                .Where(like => like.UserId == userId && like.MovieId == movieId && like.SeasonId == seasonId)
+                .ToListAsync();
+        }
+        public async Task<List<UserWatchHistory>> GetByEpisodeIdAsync(long userId, long movieId, long seasonId, long episodeId)
+        {
+            return await _context.Set<UserWatchHistory>()
+                .Where(like => like.UserId == userId && like.MovieId == movieId && like.SeasonId == seasonId && like.EpisodeId == episodeId)
                 .ToListAsync();
         }
         public async Task<bool> MovieWatchedAsync(long movieId, long userId)

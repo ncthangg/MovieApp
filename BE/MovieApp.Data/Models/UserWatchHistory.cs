@@ -13,9 +13,19 @@ public partial class UserWatchHistory
 
     public long? MovieId { get; set; }
 
-    public DateTime? WatchAt { get; set; }
+    public long? SeasonId { get; set; }
+
+    public long? EpisodeId { get; set; }
+
+    public DateTime? LastWatch { get; set; }
+
+    public long? TimeWatch { get; set; }
 
     public virtual Movie Movie { get; set; }
+
+    public virtual MovieSeason Season { get; set; }
+
+    public virtual MovieEpisode Episode { get; set; }
 
     public virtual User User { get; set; }
 }

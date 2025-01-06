@@ -15,6 +15,10 @@
    "T4TemplatePath": null,
    "Tables": [
       {
+         "Name": "[dbo].[Actor]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Category]",
          "ObjectType": 0
       },
@@ -23,11 +27,27 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Movie_Actor]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Movie_Category]",
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Movie_Episode]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Movie_Rate]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Movie_Season]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Movie_Type]",
          "ObjectType": 0
       },
       {
