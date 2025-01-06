@@ -1,9 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MovieApp.Common.DTOs.Request;
 using MovieApp.Common.DTOs.Response;
 using MovieApp.Common.DTOs;
-using MovieApp.Service.Services;
 using System.Net;
 using MovieApp.Data.Models;
 using MovieApp.Service;
@@ -32,6 +30,7 @@ namespace MovieApp.API.Controllers
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
+                    Count = result.Count,
                     Data = null
                 });
             }
@@ -40,6 +39,7 @@ namespace MovieApp.API.Controllers
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
+                Count = result.Count,
                 Data = (IEnumerable<ResponseUserDto>)result.Data
             });
         }
@@ -70,9 +70,9 @@ namespace MovieApp.API.Controllers
 
         // GET: api/movie/name={name}
         [HttpGet("search")]
-        public async Task<IActionResult> GetByName([FromQuery] string name)
+        public async Task<IActionResult> Search([FromQuery] string name)
         {
-            var result = await _serviceWrapper.UserService.GetByUserName(name);
+            var result = await _serviceWrapper.UserService.Search(name);
 
             if (result.Status < 0)
             {
@@ -80,6 +80,7 @@ namespace MovieApp.API.Controllers
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
+                    Count = result.Count,
                     Data = null
                 });
             }
@@ -88,6 +89,7 @@ namespace MovieApp.API.Controllers
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
+                Count = result.Count,
                 Data = (IEnumerable<ResponseUserDto>)result.Data
             });
         }

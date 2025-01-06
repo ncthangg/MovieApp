@@ -1,31 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MovieApp.Common.DTOs;
 using MovieApp.Common.DTOs.Request;
 using MovieApp.Common.DTOs.Response;
+using MovieApp.Common.DTOs;
 using MovieApp.Service;
 using System.Net;
 
 namespace MovieApp.API.Controllers
 {
-    [Route("category")]
+    [Route("actor")]
     [ApiController]
-    public class CategoryController : Controller
+    public class ActorController : Controller
     {
         private readonly ServiceWrapper _serviceWrapper;
 
-        public CategoryController(ServiceWrapper serviceWrapper)
+        public ActorController(ServiceWrapper serviceWrapper)
         {
             _serviceWrapper = serviceWrapper;
         }
 
-        // GET: api/category
+        // GET: api/actor
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _serviceWrapper.CategoryService.GetAllCategory();
+            var result = await _serviceWrapper.ActorService.GetAllActor();
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<IEnumerable<ResponseCategoryDto>>
+                return NotFound(new ApiResponseDto<IEnumerable<ResponseActorDto>>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
@@ -33,46 +33,46 @@ namespace MovieApp.API.Controllers
                     Data = null
                 });
             }
-            return Ok(new ApiResponseDto<IEnumerable<ResponseCategoryDto>>
+            return Ok(new ApiResponseDto<IEnumerable<ResponseActorDto>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
                 Count = result.Count,
-                Data = (IEnumerable<ResponseCategoryDto>)result.Data
+                Data = (IEnumerable<ResponseActorDto>)result.Data
             });
         }
 
-        // GET: api/category/{id}
+        // GET: api/actor/{id}
         [HttpGet("{id:long}")]
         public async Task<IActionResult> GetById(long id)
         {
-            var result = await _serviceWrapper.CategoryService.GetByCategoryId(id);
+            var result = await _serviceWrapper.ActorService.GetByActorId(id);
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<IEnumerable<ResponseCategoryDto>>
+                return NotFound(new ApiResponseDto<IEnumerable<ResponseActorDto>>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
                     Data = null
                 });
             }
-            return Ok(new ApiResponseDto<ResponseCategoryDto>
+            return Ok(new ApiResponseDto<ResponseActorDto>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
-                Data = (ResponseCategoryDto)result.Data
+                Data = (ResponseActorDto)result.Data
             });
         }
 
-        // GET: api/category/name={name}
+        // GET: api/actor/name={name}
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string name)
         {
-            var result = await _serviceWrapper.CategoryService.Search(name);
+            var result = await _serviceWrapper.ActorService.Search(name);
 
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<IEnumerable<ResponseCategoryDto>>
+                return NotFound(new ApiResponseDto<IEnumerable<ResponseActorDto>>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
@@ -81,28 +81,28 @@ namespace MovieApp.API.Controllers
                 });
             }
 
-            return Ok(new ApiResponseDto<IEnumerable<ResponseCategoryDto>>
+            return Ok(new ApiResponseDto<IEnumerable<ResponseActorDto>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
                 Count = result.Count,
-                Data = (IEnumerable<ResponseCategoryDto>)result.Data
+                Data = (IEnumerable<ResponseActorDto>)result.Data
             });
         }
 
-        // POST: api/category
+        // POST: api/actor
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] RequestCategoryDto category)
+        public async Task<IActionResult> Create([FromBody] RequestActorDto actor)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _serviceWrapper.CategoryService.Create(category);
+            var result = await _serviceWrapper.ActorService.Create(actor);
 
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<ResponseCategoryDto>
+                return NotFound(new ApiResponseDto<ResponseActorDto>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
@@ -110,28 +110,28 @@ namespace MovieApp.API.Controllers
                 });
             }
 
-            return Ok(new ApiResponseDto<ResponseCategoryDto>
+            return Ok(new ApiResponseDto<ResponseActorDto>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
-                Data = (ResponseCategoryDto)result.Data
+                Data = (ResponseActorDto)result.Data
             });
         }
 
-        // PUT: api/category/{id}
+        // PUT: api/actor/{id}
         [HttpPut("{id:long}")]
-        public async Task<IActionResult> Update(long id, [FromBody] RequestCategoryDto category)
+        public async Task<IActionResult> Update(long id, [FromBody] RequestActorDto actor)
         {
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _serviceWrapper.CategoryService.Update(id, category);
+            var result = await _serviceWrapper.ActorService.Update(id, actor);
 
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<ResponseCategoryDto>
+                return NotFound(new ApiResponseDto<ResponseActorDto>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
@@ -139,15 +139,15 @@ namespace MovieApp.API.Controllers
                 });
             }
 
-            return Ok(new ApiResponseDto<ResponseCategoryDto>
+            return Ok(new ApiResponseDto<ResponseActorDto>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
-                Data = (ResponseCategoryDto)result.Data
+                Data = (ResponseActorDto)result.Data
             });
         }
 
-        // DELETE: api/category/{id}
+        // DELETE: api/actor/{id}
         [HttpDelete("{id:long}")]
         public async Task<IActionResult> Delete(long id)
         {
@@ -156,11 +156,11 @@ namespace MovieApp.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _serviceWrapper.CategoryService.DeleteByCategoryId(id);
+            var result = await _serviceWrapper.ActorService.DeleteByActorId(id);
 
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<ResponseCategoryDto>
+                return NotFound(new ApiResponseDto<ResponseActorDto>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
@@ -168,14 +168,12 @@ namespace MovieApp.API.Controllers
                 });
             }
 
-            return Ok(new ApiResponseDto<ResponseCategoryDto>
+            return Ok(new ApiResponseDto<ResponseActorDto>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
-                Data = (ResponseCategoryDto)result.Data
+                Data = (ResponseActorDto)result.Data
             });
         }
-
-
     }
 }

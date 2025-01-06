@@ -1,18 +1,11 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieApp.Common.DTOs.AuthenticateDtos.Request;
 using MovieApp.Common.DTOs.AuthenticateDtos.Response;
 using MovieApp.Common.DTOs;
-using MovieApp.Data.Models;
-using MovieApp.Service.Helper;
 using System.Net;
-using Azure;
-using MovieApp.Common.DTOs.Response;
 using MovieApp.Service;
-using System.Net.WebSockets;
 using MovieApp.Service.Services.High;
-using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace MovieApp.API.Controllers
 {

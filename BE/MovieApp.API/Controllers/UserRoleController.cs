@@ -1,13 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MovieApp.Common.DTOs.Request;
 using MovieApp.Common.DTOs.Response;
 using MovieApp.Common.DTOs;
-using MovieApp.Data.Models;
-using MovieApp.Service.Services;
 using System.Net;
 using MovieApp.Service;
-using System.Collections.Generic;
 
 namespace MovieApp.API.Controllers
 {
@@ -32,6 +28,7 @@ namespace MovieApp.API.Controllers
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
+                    Count = result.Count,
                     Data = null
                 });
             }
@@ -40,6 +37,7 @@ namespace MovieApp.API.Controllers
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
+                Count = result.Count,
                 Data = (IEnumerable<ResponseUserRoleDto>)result.Data
             });
         }
@@ -70,15 +68,16 @@ namespace MovieApp.API.Controllers
 
         // GET: api/movie/name={name}
         [HttpGet("search")]
-        public async Task<IActionResult> GetByName([FromQuery] string name)
+        public async Task<IActionResult> Search([FromQuery] string name)
         {
-            var result = await _serviceWrapper.UserRoleService.GetByRoleName(name);
+            var result = await _serviceWrapper.UserRoleService.Search(name);
             if (result.Status < 0)
             {
                 return NotFound(new ApiResponseDto<IEnumerable<ResponseUserRoleDto>>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
+                    Count = result.Count,
                     Data = null
                 });
             }
@@ -87,6 +86,7 @@ namespace MovieApp.API.Controllers
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
+                Count = result.Count,
                 Data = (IEnumerable<ResponseUserRoleDto>)result.Data
             });
         }

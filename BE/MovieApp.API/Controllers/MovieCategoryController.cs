@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieApp.Common.DTOs;
 using MovieApp.Common.DTOs.Request;
 using MovieApp.Common.DTOs.Response;
-using MovieApp.Data.Models;
 using MovieApp.Service;
-using MovieApp.Service.Services;
 using System.Net;
 
 namespace MovieApp.API.Controllers
@@ -42,6 +39,7 @@ namespace MovieApp.API.Controllers
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
+                Count = result.Count,
                 Data = (IEnumerable<ResponseMovieCategoryDto>)result.Data
             });
 

@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MovieApp.Common.DTOs;
 using MovieApp.Common.DTOs.Request;
 using MovieApp.Common.DTOs.Response;
-using MovieApp.Data.Models;
 using MovieApp.Service;
-using MovieApp.Service.Services;
 using System.Net;
 
 namespace MovieApp.API.Controllers
@@ -24,13 +21,14 @@ namespace MovieApp.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _serviceWrapper.MovieService.GetAllMovieCategory();
+            var result = await _serviceWrapper.MovieService.GetAllMovie();
             if (result.Status < 0)
             {
                 return NotFound(new ApiResponseDto<IEnumerable<ResponseMovieDto>>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
+                    Count = result.Count,
                     Data = null
                 });
             }
@@ -39,9 +37,10 @@ namespace MovieApp.API.Controllers
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
+                Count = result.Count,
                 Data = (IEnumerable<ResponseMovieDto>)result.Data
+                
             });
-
         }
 
         // GET: api/movie/{id}
@@ -71,7 +70,7 @@ namespace MovieApp.API.Controllers
 
         // GET: api/movie/name={name}
         [HttpGet("search")]
-        public async Task<IActionResult> GetByName([FromQuery] string name)
+        public async Task<IActionResult> Search([FromQuery] string name)
         {
             var result = await _serviceWrapper.MovieService.GetByMovieName(name);
 
@@ -81,6 +80,7 @@ namespace MovieApp.API.Controllers
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
+                    Count = result.Count,
                     Data = null
                 });
             }
@@ -89,6 +89,7 @@ namespace MovieApp.API.Controllers
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
+                Count = result.Count,
                 Data = (IEnumerable<ResponseMovieDto>)result.Data
             });
         }

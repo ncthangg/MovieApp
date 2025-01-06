@@ -1,31 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MovieApp.Common.DTOs;
 using MovieApp.Common.DTOs.Request;
 using MovieApp.Common.DTOs.Response;
+using MovieApp.Common.DTOs;
 using MovieApp.Service;
 using System.Net;
 
 namespace MovieApp.API.Controllers
 {
-    [Route("category")]
+    [Route("type")]
     [ApiController]
-    public class CategoryController : Controller
+    public class TypeController : Controller
     {
         private readonly ServiceWrapper _serviceWrapper;
 
-        public CategoryController(ServiceWrapper serviceWrapper)
+        public TypeController(ServiceWrapper serviceWrapper)
         {
             _serviceWrapper = serviceWrapper;
         }
 
-        // GET: api/category
+        // GET: api/type
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _serviceWrapper.CategoryService.GetAllCategory();
+            var result = await _serviceWrapper.TypeService.GetAllType();
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<IEnumerable<ResponseCategoryDto>>
+                return NotFound(new ApiResponseDto<IEnumerable<ResponseTypeDto>>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
@@ -33,46 +33,46 @@ namespace MovieApp.API.Controllers
                     Data = null
                 });
             }
-            return Ok(new ApiResponseDto<IEnumerable<ResponseCategoryDto>>
+            return Ok(new ApiResponseDto<IEnumerable<ResponseTypeDto>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
                 Count = result.Count,
-                Data = (IEnumerable<ResponseCategoryDto>)result.Data
+                Data = (IEnumerable<ResponseTypeDto>)result.Data
             });
         }
 
-        // GET: api/category/{id}
+        // GET: api/type/{id}
         [HttpGet("{id:long}")]
         public async Task<IActionResult> GetById(long id)
         {
-            var result = await _serviceWrapper.CategoryService.GetByCategoryId(id);
+            var result = await _serviceWrapper.TypeService.GetByTypeId(id);
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<IEnumerable<ResponseCategoryDto>>
+                return NotFound(new ApiResponseDto<IEnumerable<ResponseTypeDto>>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
                     Data = null
                 });
             }
-            return Ok(new ApiResponseDto<ResponseCategoryDto>
+            return Ok(new ApiResponseDto<ResponseTypeDto>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
-                Data = (ResponseCategoryDto)result.Data
+                Data = (ResponseTypeDto)result.Data
             });
         }
 
-        // GET: api/category/name={name}
+        // GET: api/type/name={name}
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string name)
         {
-            var result = await _serviceWrapper.CategoryService.Search(name);
+            var result = await _serviceWrapper.TypeService.Search(name);
 
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<IEnumerable<ResponseCategoryDto>>
+                return NotFound(new ApiResponseDto<IEnumerable<ResponseTypeDto>>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
@@ -81,28 +81,28 @@ namespace MovieApp.API.Controllers
                 });
             }
 
-            return Ok(new ApiResponseDto<IEnumerable<ResponseCategoryDto>>
+            return Ok(new ApiResponseDto<IEnumerable<ResponseTypeDto>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
                 Count = result.Count,
-                Data = (IEnumerable<ResponseCategoryDto>)result.Data
+                Data = (IEnumerable<ResponseTypeDto>)result.Data
             });
         }
 
-        // POST: api/category
+        // POST: api/type
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] RequestCategoryDto category)
+        public async Task<IActionResult> Create([FromBody] RequestTypeDto type)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _serviceWrapper.CategoryService.Create(category);
+            var result = await _serviceWrapper.TypeService.Create(type);
 
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<ResponseCategoryDto>
+                return NotFound(new ApiResponseDto<ResponseTypeDto>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
@@ -110,28 +110,28 @@ namespace MovieApp.API.Controllers
                 });
             }
 
-            return Ok(new ApiResponseDto<ResponseCategoryDto>
+            return Ok(new ApiResponseDto<ResponseTypeDto>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
-                Data = (ResponseCategoryDto)result.Data
+                Data = (ResponseTypeDto)result.Data
             });
         }
 
-        // PUT: api/category/{id}
+        // PUT: api/type/{id}
         [HttpPut("{id:long}")]
-        public async Task<IActionResult> Update(long id, [FromBody] RequestCategoryDto category)
+        public async Task<IActionResult> Update(long id, [FromBody] RequestTypeDto type)
         {
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var result = await _serviceWrapper.CategoryService.Update(id, category);
+            var result = await _serviceWrapper.TypeService.Update(id, type);
 
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<ResponseCategoryDto>
+                return NotFound(new ApiResponseDto<ResponseTypeDto>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
@@ -139,15 +139,15 @@ namespace MovieApp.API.Controllers
                 });
             }
 
-            return Ok(new ApiResponseDto<ResponseCategoryDto>
+            return Ok(new ApiResponseDto<ResponseTypeDto>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
-                Data = (ResponseCategoryDto)result.Data
+                Data = (ResponseTypeDto)result.Data
             });
         }
 
-        // DELETE: api/category/{id}
+        // DELETE: api/type/{id}
         [HttpDelete("{id:long}")]
         public async Task<IActionResult> Delete(long id)
         {
@@ -156,11 +156,11 @@ namespace MovieApp.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _serviceWrapper.CategoryService.DeleteByCategoryId(id);
+            var result = await _serviceWrapper.TypeService.DeleteByTypeId(id);
 
             if (result.Status < 0)
             {
-                return NotFound(new ApiResponseDto<ResponseCategoryDto>
+                return NotFound(new ApiResponseDto<ResponseTypeDto>
                 {
                     StatusCode = HttpStatusCode.NotFound,
                     Message = result.Message,
@@ -168,14 +168,13 @@ namespace MovieApp.API.Controllers
                 });
             }
 
-            return Ok(new ApiResponseDto<ResponseCategoryDto>
+            return Ok(new ApiResponseDto<ResponseTypeDto>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = result.Message,
-                Data = (ResponseCategoryDto)result.Data
+                Data = (ResponseTypeDto)result.Data
             });
         }
-
 
     }
 }
