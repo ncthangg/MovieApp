@@ -1,5 +1,4 @@
 using MovieApp.API;
-using MovieApp.Common.AutoMapper;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
