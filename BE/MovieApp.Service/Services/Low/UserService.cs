@@ -5,12 +5,6 @@ using MovieApp.Common.DTOs.Request;
 using MovieApp.Common.DTOs.Response;
 using MovieApp.Data;
 using MovieApp.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MovieApp.Service.Services
 {
@@ -19,7 +13,7 @@ namespace MovieApp.Service.Services
         Task<ServiceResult> GetAllUser();
         Task<ServiceResult> GetByUserId(long id);
         Task<ServiceResult> GetByUserEmail(string email);
-        Task<ServiceResult> GetByUserName(string name);
+        Task<ServiceResult> Search(string name);
         Task<ServiceResult> Create(User x);
         Task<ServiceResult> Update(long id, RequestUserDto x);
         Task<ServiceResult> DeleteByUserId(long id);
@@ -56,11 +50,11 @@ namespace MovieApp.Service.Services
     }
     public interface IUserWatchHistoryService
     {
-        Task<ServiceResult> GetByUserId(long id);
-        Task<ServiceResult> GetByMovieId(long id);
-        Task<ServiceResult> Create(RequestUserWatchHistoryDto x);
-        Task<ServiceResult> Update(long id, RequestUserWatchHistoryDto x);
-        Task<ServiceResult> Delete(RequestUserWatchHistoryDto x);
+        Task<ServiceResult> GetAllMovieProgress(long userId);
+        Task<ServiceResult> GetMovieProgress(long userId, long movieId);
+        Task<ServiceResult> GetSeasonProgress(long userId, long movieId, long seasonId);
+        Task<ServiceResult> GetEpisodeProgress(long userId, long movieId, long seasonId, long episodeId);
+        Task<ServiceResult> Upsert(RequestUserWatchHistoryDto x);
     }
 
     public class UserService : IUserService
@@ -83,7 +77,7 @@ namespace MovieApp.Service.Services
             else
             {
                 var response = _mapper.Map<IEnumerable<ResponseUserDto>>(result);
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
             }
         }
         public async Task<ServiceResult> GetByUserId(long id)
@@ -112,7 +106,7 @@ namespace MovieApp.Service.Services
                 return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
             }
         }
-        public async Task<ServiceResult> GetByUserName(string name)
+        public async Task<ServiceResult> Search(string name)
         {
             var result = await _unitOfWork.UserRepository.GetByUserNameAsync(name);
             if (!result.Any())
@@ -122,7 +116,7 @@ namespace MovieApp.Service.Services
             else
             {
                 var response = _mapper.Map<IEnumerable<ResponseUserDto>>(result);
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
             }
         }
         public async Task<ServiceResult> Create(User x)
@@ -223,7 +217,7 @@ namespace MovieApp.Service.Services
             else
             {
                 var response = _mapper.Map<IEnumerable<ResponseUserLikeDto>>(result);
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
             }
         }
         public async Task<ServiceResult> GetByMovieId(long id)
@@ -236,7 +230,7 @@ namespace MovieApp.Service.Services
             else
             {
                 var response = _mapper.Map<IEnumerable<ResponseUserLikeDto>>(result);
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
             }
         }
         public async Task<ServiceResult> Like(RequestUserLikeDto x)
@@ -303,7 +297,7 @@ namespace MovieApp.Service.Services
             else
             {
                 var response = _mapper.Map<IEnumerable<ResponseUserRoleDto>>(result);
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
             }
         }
         public async Task<ServiceResult> GetByRoleId(long id)
@@ -342,7 +336,7 @@ namespace MovieApp.Service.Services
             else
             {
                 var response = _mapper.Map<IEnumerable<ResponseUserRoleDto>>(result);
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
             }
         }
         public async Task<ServiceResult> Create(RequestUserRoleDto x)
@@ -387,20 +381,19 @@ namespace MovieApp.Service.Services
         }
         public async Task<ServiceResult> DeleteByRoleId(long id)
         {
-            var userRole = await this.GetByRoleId(id);
-            if (userRole.Status < 0)
+            var userRole = await _unitOfWork.UserRoleRepository.GetByIdAsync(id);
+            if (userRole == null)
             {
                 return new ServiceResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG, null);
             }
             else
             {
-                var userRoleData = userRole.Data as UserRole;
-                var result = await _unitOfWork.UserRoleRepository.RemoveAsync(userRoleData);
+                var result = await _unitOfWork.UserRoleRepository.RemoveAsync(userRole);
                 if (!result)
                 {
                     return new ServiceResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG, null);
                 }
-                var response = _mapper.Map<ResponseUserRoleDto>(userRoleData);
+                var response = _mapper.Map<ResponseUserRoleDto>(userRole);
                 return new ServiceResult(Const.SUCCESS_DELETE_CODE, Const.SUCCESS_DELETE_MSG, response);
             }
         }
@@ -432,7 +425,7 @@ namespace MovieApp.Service.Services
             else
             {
                 var response = _mapper.Map<IEnumerable<ResponseUserStatusDto>>(result);
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
             }
         }
         public async Task<ServiceResult> GetByStatusId(long id)
@@ -471,7 +464,7 @@ namespace MovieApp.Service.Services
             else
             {
                 var response = _mapper.Map<IEnumerable<ResponseUserStatusDto>>(result);
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
             }
         }
         public async Task<ServiceResult> Create(RequestUserStatusDto x)
@@ -495,7 +488,7 @@ namespace MovieApp.Service.Services
         }
         public async Task<ServiceResult> Update(long id, RequestUserStatusDto x)
         {
-            var statusIdExist = await this.UserStatusExist(x.StatusName);
+            var statusIdExist = await this.UserStatusExist(id);
             var statusNameExist = await this.UserStatusExist(x.StatusName);
             if (statusIdExist && !statusNameExist)
             {
@@ -516,26 +509,23 @@ namespace MovieApp.Service.Services
         }
         public async Task<ServiceResult> DeleteByStatusId(long id)
         {
-            var status = await this.GetByStatusId(id);
-            if (status.Status < 0)
+            var status = await _unitOfWork.UserStatusRepository.GetByIdAsync(id);
+            if (status == null)
             {
                 return new ServiceResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG, null);
             }
             else
             {
-                var statusData = status.Data as UserStatus;
-                var result = await _unitOfWork.UserStatusRepository.RemoveAsync(statusData);
+                var result = await _unitOfWork.UserStatusRepository.RemoveAsync(status);
 
-                var response = _mapper.Map<ResponseUserStatusDto>(statusData);
                 if (!result)
                 {
                     return new ServiceResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG, null);
                 }
-
-                return new ServiceResult(Const.SUCCESS_DELETE_CODE, Const.SUCCESS_DELETE_MSG, status);
+                var response = _mapper.Map<ResponseUserStatusDto>(status);
+                return new ServiceResult(Const.SUCCESS_DELETE_CODE, Const.SUCCESS_DELETE_MSG, response);
             }
         }
-
         private async Task<bool> UserStatusExist(long id)
         {
             return await _unitOfWork.UserStatusRepository.EntityExistsByPropertyAsync("StatusId", id);
@@ -554,10 +544,9 @@ namespace MovieApp.Service.Services
             _unitOfWork ??= new UnitOfWork();
             _mapper = mapper;
         }
-
-        public async Task<ServiceResult> GetByUserId(long id)
+        public async Task<ServiceResult> GetAllMovieProgress(long userId)
         {
-            var result = await _unitOfWork.UserWatchHistoryRepository.GetByUserIdAsync(id);
+            var result = await _unitOfWork.UserWatchHistoryRepository.GetByUserIdAsync(userId);
             if (!result.Any())
             {
                 return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, null);
@@ -565,12 +554,12 @@ namespace MovieApp.Service.Services
             else
             {
                 var response = _mapper.Map<IEnumerable<ResponseUserWatchHistoryDto>>(result);
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
             }
         }
-        public async Task<ServiceResult> GetByMovieId(long id)
+        public async Task<ServiceResult> GetMovieProgress(long userId, long movieId)
         {
-            var result = await _unitOfWork.UserWatchHistoryRepository.GetByMovieIdAsync(id);
+            var result = await _unitOfWork.UserWatchHistoryRepository.GetByMovieIdAsync(userId, movieId);
             if (!result.Any())
             {
                 return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, null);
@@ -578,72 +567,84 @@ namespace MovieApp.Service.Services
             else
             {
                 var response = _mapper.Map<IEnumerable<ResponseUserWatchHistoryDto>>(result);
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
             }
+
         }
-        public async Task<ServiceResult> Create(RequestUserWatchHistoryDto x)
+        public async Task<ServiceResult> GetSeasonProgress(long userId, long movieId, long seasonId)
         {
-            var movieWatched = await this.MovieWatched(x);
-            if (movieWatched.Status < 0)
+            var result = await _unitOfWork.UserWatchHistoryRepository.GetBySeasonIdAsync(userId, movieId, seasonId);
+            if (!result.Any())
             {
-                return new ServiceResult(Const.FAIL_CREATE_CODE, Const.FAIL_CREATE_MSG, null);
+                return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, null);
             }
             else
             {
-                var request = _mapper.Map<UserWatchHistory>(x);
-                var result = await _unitOfWork.UserWatchHistoryRepository.CreateAsync(request);
+                var response = _mapper.Map<IEnumerable<ResponseUserWatchHistoryDto>>(result);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
+            }
+        }
+        public async Task<ServiceResult> GetEpisodeProgress(long userId, long movieId, long seasonId, long episodeId)
+        {
+            var result = await _unitOfWork.UserWatchHistoryRepository.GetByEpisodeIdAsync(userId, movieId, seasonId, episodeId);
+            if (!result.Any())
+            {
+                return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, null);
+            }
+            else
+            {
+                var response = _mapper.Map<IEnumerable<ResponseUserWatchHistoryDto>>(result);
+                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, response, response.Count());
+            }
+        }
+        public async Task<ServiceResult> Upsert(RequestUserWatchHistoryDto request)
+        {
+            var movieExist = await _unitOfWork.MovieRepository.EntityExistsByPropertyAsync("MovieId", (long)request.MovieId);
+            if (!movieExist)
+            {
+                return new ServiceResult(Const.FAIL_CREATE_CODE, Const.FAIL_CREATE_MSG);
+            }
 
-                var response = _mapper.Map<ResponseUserWatchHistoryDto>(result);
+            List<UserWatchHistory> result = new List<UserWatchHistory>();
+            if (request.SeasonId.HasValue && request.EpisodeId.HasValue)
+            {
+                 result = await _unitOfWork.UserWatchHistoryRepository.GetByEpisodeIdAsync(request.UserId, (long)request.MovieId, (long)request.SeasonId, (long)request.EpisodeId);
+            }
+            else if(request.SeasonId.HasValue)
+            {
+                 result = await _unitOfWork.UserWatchHistoryRepository.GetBySeasonIdAsync(request.UserId, (long)request.MovieId, (long)request.SeasonId);
+            }
+            else
+            {
+                 result = await _unitOfWork.UserWatchHistoryRepository.GetByMovieIdAsync(request.UserId, (long)request.MovieId);
+            }
+
+            if (!result.Any())
+            {
+                var newWatchHistory = new UserWatchHistory
+                {
+                    UserId = request.UserId,
+                    MovieId = request.MovieId,
+                    SeasonId = request.SeasonId,
+                    EpisodeId = request.EpisodeId,
+                    LastWatch = request.LastWatch ?? DateTime.UtcNow,
+                    TimeWatch = 0
+                };
+                var resultCreate = await _unitOfWork.UserWatchHistoryRepository.CreateAsync(newWatchHistory);
+                var response = _mapper.Map<ResponseUserWatchHistoryDto>(resultCreate);
                 return new ServiceResult(Const.SUCCESS_CREATE_CODE, Const.SUCCESS_CREATE_MSG, response);
             }
-        }
-        public async Task<ServiceResult> Update(long id, RequestUserWatchHistoryDto x)
-        {
-            var movieWatched = await this.MovieWatched(x);
-            if (movieWatched.Status < 0)
-            {
-                return new ServiceResult(Const.FAIL_UPDATE_CODE, Const.FAIL_UPDATE_MSG, null);
-            }
             else
             {
-                var request = _mapper.Map<UserWatchHistory>(x);
-                var result = await _unitOfWork.UserWatchHistoryRepository.UpdateAsync(request);
+                var existingHistory = result.First();
 
-                var response = _mapper.Map<ResponseUserWatchHistoryDto>(result);
-                return new ServiceResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG, x);
-            }
-        }
-        public async Task<ServiceResult> Delete(RequestUserWatchHistoryDto x)
-        {
-            var movieWatched = await this.MovieWatched(x);
-            if (movieWatched.Status < 0)
-            {
-                return new ServiceResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG, null);
-            }
-            else
-            {
-                var request = _mapper.Map<UserWatchHistory>(x);
+                existingHistory.LastWatch = request.LastWatch ?? DateTime.UtcNow;
+                existingHistory.TimeWatch = request.TimeWatch;
 
-                var result = await _unitOfWork.UserWatchHistoryRepository.RemoveAsync(request);
-                if (!result)
-                {
-                    return new ServiceResult(Const.FAIL_DELETE_CODE, Const.FAIL_DELETE_MSG, null);
-                }
+                var resultUpdate = await _unitOfWork.UserWatchHistoryRepository.UpdateAsync(existingHistory);
+                var response = _mapper.Map<ResponseUserWatchHistoryDto>(resultUpdate);
 
-                var response = _mapper.Map<ResponseUserWatchHistoryDto>(result);
-                return new ServiceResult(Const.SUCCESS_DELETE_CODE, Const.SUCCESS_DELETE_MSG, response);
-            }
-        }
-        private async Task<ServiceResult> MovieWatched(RequestUserWatchHistoryDto x)
-        {
-            var watched = await _unitOfWork.UserWatchHistoryRepository.MovieWatchedAsync((long)x.MovieId, x.UserId);
-            if (!watched)
-            {
-                return new ServiceResult(Const.FAIL_READ_CODE, Const.FAIL_READ_MSG, null);
-            }
-            else
-            {
-                return new ServiceResult(Const.SUCCESS_READ_CODE, Const.SUCCESS_READ_MSG, x);
+                return new ServiceResult(Const.SUCCESS_UPDATE_CODE, Const.SUCCESS_UPDATE_MSG, response);
             }
         }
 

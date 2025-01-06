@@ -6,7 +6,6 @@ using MovieApp.Common.DTOs.AuthenticateDtos.Response;
 using MovieApp.Common.DTOs.Response;
 using MovieApp.Data;
 using MovieApp.Data.Models;
-using System.Net.WebSockets;
 
 namespace MovieApp.Service.Services.High
 {
