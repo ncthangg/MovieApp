@@ -28,9 +28,17 @@ namespace MovieApp.API
             services.AddScoped<IUserLikeService, UserLikeService>();
 
             services.AddScoped<IMovieService, MovieService>();
+            services.AddScoped<IMovieSeasonService, MovieSeasonService>();
+            services.AddScoped<IMovieEpisodeService, MovieEpisodeService>();
+
             services.AddScoped<IMovieCategoryService, MovieCategoryService>();
+            services.AddScoped<IMovieActorService, MovieActorService>();
+
             services.AddScoped<IMovieRateService, MovieRateService>();
+
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IActorService, ActorService>();
+            services.AddScoped<ITypeService, TypeService>();
 
             services.AddScoped<ServiceWrapper>();
             return services;
